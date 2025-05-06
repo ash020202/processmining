@@ -1,9 +1,11 @@
-import React from 'react';
+import { HtmlProps } from "next/dist/shared/lib/html-context.shared-runtime";
+import React, { ReactNode } from "react";
 
 interface TabsProps {
   tabs: {
     id: string;
     label: string;
+    content: ReactNode;
   }[];
   activeTab: string;
   onTabChange: (tabId: string) => void;
@@ -18,10 +20,10 @@ const Tabs: React.FC<TabsProps> = ({ tabs, activeTab, onTabChange }) => {
             key={tab.id}
             className={`py-4 px-1 text-sm font-medium ${
               activeTab === tab.id
-                ? 'border-b-2 border-blue-500 text-blue-600'
-                : 'text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                ? "border-b-2 border-blue-500 text-blue-600"
+                : "text-gray-500 hover:text-gray-700 hover:border-gray-300"
             }`}
-            onClick={() => onTabChange(tab.id)}
+            onClick={() => onTabChange(tab?.id)}
           >
             {tab.label}
           </button>

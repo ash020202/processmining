@@ -1,4 +1,4 @@
-// File: /home/ubuntu/process_mining_dashboard/src/app/conformance/page.tsx
+// File: C:\Users\VimalkanthPadmapriya\Desktop\processmining\src\app\conformance\page.tsx
 import * as entry from '../../../../src/app/conformance/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

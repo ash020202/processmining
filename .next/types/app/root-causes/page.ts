@@ -1,4 +1,4 @@
-// File: /home/ubuntu/process_mining_dashboard/src/app/root-causes/page.tsx
+// File: C:\Users\VimalkanthPadmapriya\Desktop\processmining\src\app\root-causes\page.tsx
 import * as entry from '../../../../src/app/root-causes/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

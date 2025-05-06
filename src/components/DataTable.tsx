@@ -1,8 +1,10 @@
-import React from 'react';
+import React from "react";
 
 interface DataTableProps {
-  data: any[];
-  columns: {
+  headers?: string[];
+  rows?: string[][];
+  data?: any[];
+  columns?: {
     header: string;
     accessor: string;
     cell?: (value: any, row: any) => React.ReactNode;
@@ -16,22 +18,22 @@ const DataTable: React.FC<DataTableProps> = ({ data, columns, onRowClick }) => {
       <table className="data-table">
         <thead>
           <tr>
-            {columns.map((column, index) => (
+            {columns?.map((column, index) => (
               <th key={index}>{column.header}</th>
             ))}
           </tr>
         </thead>
         <tbody>
-          {data.map((row, rowIndex) => (
-            <tr 
-              key={rowIndex} 
+          {data?.map((row, rowIndex) => (
+            <tr
+              key={rowIndex}
               onClick={() => onRowClick && onRowClick(row)}
-              className={onRowClick ? 'cursor-pointer' : ''}
+              className={onRowClick ? "cursor-pointer" : ""}
             >
-              {columns.map((column, colIndex) => (
+              {columns?.map((column, colIndex) => (
                 <td key={colIndex}>
-                  {column.cell 
-                    ? column.cell(row[column.accessor], row) 
+                  {column.cell
+                    ? column.cell(row[column.accessor], row)
                     : row[column.accessor]}
                 </td>
               ))}
