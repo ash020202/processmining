@@ -1,7 +1,0 @@
-{
-  "/page": "app/page.js",
-  "/lead-time/page": "app/lead-time/page.js",
-  "/conformance/page": "app/conformance/page.js",
-  "/process-flow/page": "app/process-flow/page.js",
-  "/root-causes/page": "app/root-causes/page.js"
-}
