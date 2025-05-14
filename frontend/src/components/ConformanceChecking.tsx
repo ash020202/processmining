@@ -1,28 +1,13 @@
-import { ConformanceData, Deviation } from "@/app/conformance-analysis/page";
+import { ConformanceData, Deviation } from "@/lib/types";
 import React from "react";
 
-interface ConformanceCheckingProps {
-  conformanceData: {
-    totalCases: number;
-    conformantCases: number;
-    nonConformantCases: number;
-    conformanceRate: number;
-    deviations: {
-      type: string;
-      count: number;
-      percentage: number;
-      impact: string;
-    }[];
-  };
-}
-
-const ConformanceChecking: React.FC<ConformanceData> = ({
+const ConformanceChecking = ({
   totalCases,
   conformantCases,
   nonConformantCases,
   conformanceRate,
   deviations,
-}) => {
+}: ConformanceData) => {
   return (
     <div className="bg-white rounded-lg shadow overflow-hidden">
       <div className="p-6">

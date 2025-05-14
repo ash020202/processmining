@@ -1,16 +1,5 @@
+import { DataTableProps } from "@/lib/types";
 import React from "react";
-
-interface DataTableProps {
-  headers?: string[];
-  rows?: string[][];
-  data?: any[];
-  columns?: {
-    header: string;
-    accessor: string;
-    cell?: (value: any, row: any) => React.ReactNode;
-  }[];
-  onRowClick?: (row: any) => void;
-}
 
 const DataTable: React.FC<DataTableProps> = ({ data, columns, onRowClick }) => {
   return (

@@ -9,9 +9,27 @@ const router = [
   {
     method: "GET",
     path: "/user",
-    handler: () => {
+    handler: (req, h) => {
       const user = [{ name: "vimal" }, { name: "vimal" }, { name: "vimal" }];
-      return user;
+      return h.status;
+    },
+  },
+  {
+    method: "POST",
+    path: "/name",
+    handler: (req, h) => {
+      const name = req.payload;
+      return {
+        message: "Data received successfully!",
+        data: name,
+      };
+    },
+  },
+  {
+    method: "GET",
+    path: "/{any*}",
+    handler: (req, h) => {
+      return h.redirect("/");
     },
   },
 ];

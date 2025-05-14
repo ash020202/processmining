@@ -1,15 +1,8 @@
-import { Deviation } from "@/app/conformance-analysis/page";
+import { Deviation } from "@/lib/types";
 import React from "react";
 
 interface DeviatingFlowsProps {
   deviatingFlows: Deviation[] | undefined;
-  // deviatingFlows: {
-  //   flow: string;
-  //   percentage: string;
-  //   duration: string;
-  //   events: string;
-  //   impact?: "high" | "medium" | "low";
-  // }[];
 }
 
 const DeviatingFlows: React.FC<DeviatingFlowsProps> = ({ deviatingFlows }) => {

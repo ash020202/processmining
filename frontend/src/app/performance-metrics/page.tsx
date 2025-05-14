@@ -7,6 +7,7 @@ import PerformanceMetrics from "../../components/PerformanceMetrics";
 import BottleneckAnalysis from "../../components/BottleneckAnalysis";
 import ActivityDurationAnalysis from "../../components/ActivityDurationAnalysis";
 import csvDataService from "../../lib/csvDataService";
+import Loader from "@/components/Loader";
 
 export default function PerformanceMetricsPage() {
   const [materialGroups, setMaterialGroups] = useState<string[]>([]);
@@ -234,7 +235,7 @@ export default function PerformanceMetricsPage() {
 
       {isLoading ? (
         <div className="flex justify-center items-center h-64">
-          <div className="text-lg text-gray-600">Loading data...</div>
+          <Loader />
         </div>
       ) : (
         <div className="space-y-6">

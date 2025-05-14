@@ -1,13 +1,5 @@
+import { ProgressBarProps } from "@/lib/types";
 import React from "react";
-
-interface ProgressBarProps {
-  value: number;
-  total: number;
-  successColor?: string;
-  failureColor?: string;
-  label?: string;
-  showPercentage?: boolean;
-}
 
 const ProgressBar: React.FC<ProgressBarProps> = ({
   value,

@@ -6,22 +6,7 @@ import FilterBar from "../../components/FilterBar";
 import ProcessFlow from "../../components/ProcessFlow";
 import csvDataService from "../../lib/csvDataService";
 import Loader from "@/components/Loader";
-
-type edgeType = {
-  source: string;
-  target: string;
-  count: number;
-};
-type nodeType = {
-  id: string;
-  label: string;
-  count: number;
-  type?: string;
-};
-type processFlowDataType = {
-  nodes: nodeType[];
-  edges: edgeType[];
-};
+import { processFlowDataType } from "@/lib/types";
 
 export default function ProcessFlowPage() {
   const [materialGroups, setMaterialGroups] = useState<string[]>([]);
@@ -84,7 +69,6 @@ export default function ProcessFlowPage() {
 
       {isLoading ? (
         <div className="flex justify-center items-center h-64">
-          {/* <div className="text-lg text-gray-600">Loading data...</div> */}
           <Loader />
         </div>
       ) : (

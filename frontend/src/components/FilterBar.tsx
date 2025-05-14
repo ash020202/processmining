@@ -1,17 +1,5 @@
+import { FilterBarProps } from "@/lib/types";
 import React from "react";
-
-interface FilterBarProps {
-  onFilterChange: (filters: any) => void;
-  filters: {
-    dateRange?: [Date, Date];
-    materialGroup?: string;
-    company?: string;
-    region?: string;
-  };
-  materialGroups: string[];
-  companies: string[];
-  regions: string[];
-}
 
 const FilterBar: React.FC<FilterBarProps> = ({
   onFilterChange,

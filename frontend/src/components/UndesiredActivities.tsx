@@ -1,18 +1,9 @@
+import { UndesiredActivitiesProps } from "@/lib/types";
 import React from "react";
 
-interface UndesiredActivitiesProps {
-  undesiredActivities: {
-    activity: string;
-    frequency: string | number;
-    caseCount: number;
-    avgDuration: string;
-    impact?: string;
-  }[];
-}
-
-const UndesiredActivities: React.FC<UndesiredActivitiesProps> = ({
+const UndesiredActivities = ({
   undesiredActivities,
-}) => {
+}: UndesiredActivitiesProps) => {
   const getFirstWord = (impact: string): string => {
     const splitWord = impact.split(" ");
     console.log(splitWord[0]);

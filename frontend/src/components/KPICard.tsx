@@ -1,15 +1,5 @@
+import { KPICardProps } from "@/lib/types";
 import React from "react";
-
-interface KPICardProps {
-  title: string;
-  value: string | number;
-  trend?: number;
-  trendLabel?: string;
-  trendDirection?: string;
-  trendIsPositive?: boolean;
-  icon?: React.ReactNode;
-  color?: string;
-}
 
 const KPICard: React.FC<KPICardProps> = ({
   title,
@@ -17,7 +7,6 @@ const KPICard: React.FC<KPICardProps> = ({
   trend,
   trendLabel,
   icon,
-  color = "orange",
 }) => {
   const getTrendClass = () => {
     if (!trend) return "neutral";

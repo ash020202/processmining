@@ -7,21 +7,10 @@ import ConformanceChecking from "../../components/ConformanceChecking";
 import DeviatingFlows from "../../components/DeviatingFlows";
 import UndesiredActivities from "../../components/UndesiredActivities";
 import csvDataService from "../../lib/csvDataService";
+import { ConformanceData } from "@/lib/types";
+import { undesiredActivities } from "@/lib/mockData";
+import Loader from "@/components/Loader";
 
-export type Deviation = {
-  type: string | undefined;
-  count: number | undefined;
-  percentage: number | undefined;
-  impact: string | undefined;
-};
-
-export type ConformanceData = {
-  totalCases: number | undefined;
-  conformantCases: number | undefined;
-  nonConformantCases: number | undefined;
-  conformanceRate: number | undefined;
-  deviations: Deviation[] | undefined;
-};
 export default function ConformanceAnalysisPage() {
   const [materialGroups, setMaterialGroups] = useState<string[]>([]);
   const [companies, setCompanies] = useState<string[]>([]);
@@ -78,7 +67,7 @@ export default function ConformanceAnalysisPage() {
 
       {isLoading ? (
         <div className="flex justify-center items-center h-64">
-          <div className="text-lg text-gray-600">Loading data...</div>
+          <Loader />
         </div>
       ) : (
         <div className="space-y-6">
@@ -92,46 +81,7 @@ export default function ConformanceAnalysisPage() {
 
           <DeviatingFlows deviatingFlows={conformanceData?.deviations} />
 
-          <UndesiredActivities
-            undesiredActivities={[
-              {
-                activity: "Create Invoice after Create Invoice",
-                frequency: "8.3%",
-                caseCount: 415,
-                avgDuration: "6.5 days",
-                impact:
-                  "High impact on process quality (23% higher rejection rate)",
-              },
-              {
-                activity: "Deactivate Delivery Block",
-                frequency: "4.5%",
-                caseCount: 225,
-                avgDuration: "18.1 days",
-                impact: "Medium impact on process duration (+4.3 days)",
-              },
-              {
-                activity: "Change Manual Price in Sales Order",
-                frequency: "4.6%",
-                caseCount: 230,
-                avgDuration: "3.4 days",
-                impact: "Medium impact on process cost (+$32 per case)",
-              },
-              {
-                activity: "Deactivate Billing Block",
-                frequency: "8.3%",
-                caseCount: 415,
-                avgDuration: "6.5 days",
-                impact: "Medium impact on process duration (+2.8 days)",
-              },
-              {
-                activity: "Change Material in Sales Order",
-                frequency: "3.0%",
-                caseCount: 150,
-                avgDuration: "9.3 days",
-                impact: "Medium impact on process duration (+2.3 days)",
-              },
-            ]}
-          />
+          <UndesiredActivities undesiredActivities={undesiredActivities} />
         </div>
       )}
     </DashboardLayout>

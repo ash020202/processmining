@@ -9,7 +9,8 @@ import ConformanceByGroup, {
   ConformanceByGroupProps,
 } from "../../components/ConformanceByGroup";
 import csvDataService from "../../lib/csvDataService";
-import { ConformanceData } from "../conformance-analysis/page";
+import { ConformanceData } from "@/lib/types";
+import Loader from "@/components/Loader";
 
 export default function ConformanceCheckingPage() {
   const [materialGroups, setMaterialGroups] = useState<string[]>([]);
@@ -162,7 +163,7 @@ export default function ConformanceCheckingPage() {
 
       {isLoading ? (
         <div className="flex justify-center items-center h-64">
-          <div className="text-lg text-gray-600">Loading data...</div>
+          <Loader />
         </div>
       ) : (
         <div className="space-y-6">
@@ -193,46 +194,6 @@ export default function ConformanceCheckingPage() {
                 insights:
               </p>
 
-              {/* <ul className="list-disc pl-5 space-y-2 mt-2">
-                <li>
-                  <span className="font-medium">Overall Conformance:</span>{" "}
-                  {conformanceData?.conformanceRate}% of cases follow the
-                  standard process path, indicating good overall process
-                  discipline.
-                </li>
-                <li>
-                  <span className="font-medium">Material Group Impact:</span>{" "}
-                  Power Tools have the highest conformance rate at{" "}
-                  {conformanceByGroup[0]?.data[0]?.rate || 0}%, while
-                  Fertilizers have the lowest at{" "}
-                  {conformanceByGroup[0]?.data[
-                    conformanceByGroup[0]?.data.length - 1
-                  ]?.rate || 0}
-                  %.
-                </li>
-                <li>
-                  <span className="font-medium">Company Variations:</span>{" "}
-                  {conformanceByGroup[1]?.data[0]?.group || "Top companies"}{" "}
-                  shows the best conformance at{" "}
-                  {conformanceByGroup[1]?.data[0]?.rate || 0}%, while{" "}
-                  {conformanceByGroup[1]?.data[
-                    conformanceByGroup[1]?.data.length - 1
-                  ]?.group || "bottom companies"}{" "}
-                  has the lowest at{" "}
-                  {conformanceByGroup[1]?.data[
-                    conformanceByGroup[1]?.data.length - 1
-                  ]?.rate || 0}
-                  %.
-                </li>
-                <li>
-                  <span className="font-medium">Common Deviations:</span> Price
-                  changes and material changes are the most common deviations,
-                  accounting for{" "}
-                  {conformanceData.deviations[0].percentage || 0}% and{" "}
-                  {conformanceData.deviations[1].percentage || 0}% of cases
-                  respectively.
-                </li>
-              </ul> */}
               {conformanceByGroup && (
                 <ul className="list-disc pl-5 space-y-2 mt-2">
                   <li>

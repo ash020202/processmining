@@ -83,7 +83,6 @@ export default function Dashboard() {
 
       {isLoading ? (
         <div className="flex justify-center items-center h-64">
-          {/* <div className="text-lg text-gray-600">Loading data...</div> */}
           <Loader />
         </div>
       ) : (

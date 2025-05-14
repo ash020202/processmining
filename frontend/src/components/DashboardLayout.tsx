@@ -1,9 +1,6 @@
 import React from "react";
 import Navbar from "../components/Navbar";
-
-interface DashboardLayoutProps {
-  children: React.ReactNode;
-}
+import { DashboardLayoutProps } from "@/lib/types";
 
 const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   return (
