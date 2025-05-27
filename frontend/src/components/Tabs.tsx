@@ -1,4 +1,3 @@
-import { HtmlProps } from "next/dist/shared/lib/html-context.shared-runtime";
 import React, { ReactNode } from "react";
 
 interface TabsProps {
@@ -12,6 +11,7 @@ interface TabsProps {
 }
 
 const Tabs: React.FC<TabsProps> = ({ tabs, activeTab, onTabChange }) => {
+  const activeTabContent = tabs.find((tab) => tab.id === activeTab)?.content;
   return (
     <div className="border-b border-gray-200 mb-6">
       <div className="flex space-x-8">
@@ -29,6 +29,7 @@ const Tabs: React.FC<TabsProps> = ({ tabs, activeTab, onTabChange }) => {
           </button>
         ))}
       </div>
+      <div className="tab-content">{activeTabContent}</div>
     </div>
   );
 };

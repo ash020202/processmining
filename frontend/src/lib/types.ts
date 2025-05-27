@@ -79,15 +79,31 @@ export interface UndesiredActivitiesProps {
 type edgeType = {
   source: string;
   target: string;
-  count: number;
+  label?: string;
+  value?: number;
 };
 type nodeType = {
   id: string;
   label: string;
   count: number;
-  type?: string;
+  isConformant?: boolean;
 };
 export type processFlowDataType = {
-  nodes: nodeType[];
-  edges: edgeType[];
+  nodes: nodeType[] | undefined;
+  edges: edgeType[] | undefined;
 };
+
+// export interface ProcessFlowProps {
+//   nodes: {
+//     id: string;
+//     label: string;
+//     count: number;
+//     isConformant?: boolean;
+//   }[];
+//   edges: {
+//     source: string;
+//     target: string;
+//     label?: string;
+//     value?: number;
+//   }[];
+// }

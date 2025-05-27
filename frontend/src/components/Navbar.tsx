@@ -3,14 +3,13 @@ import React, { useState } from "react";
 import Link from "next/link";
 
 import { usePathname } from "next/navigation";
-import { Menubar } from "@radix-ui/react-menubar";
 import { MenuIcon } from "lucide-react";
 
 const Navbar = () => {
   const router = usePathname();
   const [openNav, setOpenNav] = useState(false);
   const navList = [
-    { label: "Overview", linkTo: "/" },
+    { label: "Overview", linkTo: "/overview" },
     { label: "Conformance", linkTo: "/conformance" },
     { label: "Lead Time", linkTo: "/lead-time" },
     { label: "Process Flow", linkTo: "/process-flow" },
