@@ -20,9 +20,11 @@ const KPICard: React.FC<KPICardProps> = ({
 
   return (
     <div className={`kpi-card border-t-4 border-orange-500`}>
-      <div className="flex justify-between items-center w-full">
+      <div className="flex justify-between items-center w-full bg-gray">
         <h3 className="text-sm font-medium text-gray-500">{title}</h3>
-        {icon && <div className="text-gray-400">{icon}</div>}
+        {icon && (
+          <div className="text-black p-1 rounded-full bg-gray-200 ">{icon}</div>
+        )}
       </div>
       <div className="kpi-value">{value}</div>
       {trend && (
