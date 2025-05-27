@@ -1,260 +1,307 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { parseCSV } from "@/lib/utils";
-import {
-  AlertCircle,
-  CheckCircle2,
-  FileSpreadsheet,
-  HelpCircle,
-  Upload,
-  X,
-} from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
+import DashboardLayout from "../components/DashboardLayout";
+import KPICard from "../components/KPICard";
+import FilterBar from "../components/FilterBar";
+import Tabs from "../components/Tabs";
+import DataTable from "../components/DataTable";
+import ProcessFlow from "../components/ProcessFlow";
+import csvDataService from "../lib/csvDataService";
+import Loader from "@/components/Loader";
 
-export default function HomePage() {
-  const [file, setFile] = useState<File | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [isUploading, setIsUploading] = useState(false);
-  const router = useRouter();
+export default function Dashboard() {
+  const [materialGroups, setMaterialGroups] = useState<string[]>([]);
+  const [companies, setCompanies] = useState<string[]>([]);
+  const [regions, setRegions] = useState<string[]>([]);
+  const [filters, setFilters] = useState({});
+  const [performanceMetrics, setPerformanceMetrics] = useState({
+    avgLeadTime: 0,
+    medianLeadTime: 0,
+    onTimeDeliveryRate: 0,
+    caseCount: 0,
+    completedCases: 0,
+    activeCases: 0,
+  });
+  const [processFlowData, setProcessFlowData] = useState<any>({
+    nodes: [],
+    edges: [],
+  });
+  const [isLoading, setIsLoading] = useState(true);
+  const [currentTab, setCurrentTab] = useState("recent-cases");
+  // const router = useRouter();
+  useEffect(() => {
+    // router.prefetch("/conformance");
+    const loadData = async () => {
+      try {
+        setIsLoading(true);
 
-  const handleUpload = async () => {
-    if (!file) {
-      setError("Please select a CSV file to upload");
-      return;
-    }
+        // Load filter options
+        const materialGroupsData = await csvDataService.getMaterialGroups();
+        const companiesData = await csvDataService.getCompanies();
+        const regionsData = await csvDataService.getRegions();
 
-    setIsUploading(true);
+        setMaterialGroups(materialGroupsData);
+        setCompanies(companiesData);
+        setRegions(regionsData);
 
-    try {
-      const data = await parseCSV(file);
-      const header = Object.keys(data[0]);
-      const requiredKeywords = ["case", "activity", "timestamp"];
+        // Load performance metrics
+        const metrics = await csvDataService.getPerformanceMetrics();
+        setPerformanceMetrics(metrics);
 
-      const isValidColumn = (column: string, keyword: string) =>
-        column.toLowerCase().includes(keyword.toLowerCase());
+        // Load process flow data
+        const flowData = await csvDataService.getProcessFlowData();
+        setProcessFlowData(flowData);
 
-      const validateCSVHeaders = (headers: string[]) =>
-        requiredKeywords.every((keyword) =>
-          headers.some((header) => isValidColumn(header, keyword))
-        );
-
-      if (!validateCSVHeaders(header)) {
-        setError("Missing required columns: case, activity, timestamp");
-        setIsUploading(false);
-        return;
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Error loading dashboard data:", error);
+        setIsLoading(false);
       }
+    };
 
-      localStorage.setItem("columnMap", JSON.stringify(header));
-      setIsUploading(false);
-      router.push("/overview");
-    } catch (error) {
-      console.error("Error parsing CSV file:", error);
-      setError("Failed to parse CSV file.");
-      setIsUploading(false);
-    }
-  };
+    loadData();
+  }, []);
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50 ">
-      <div className="flex flex-col self-start sticky top-0 z-10 bg-black w-full backdrop-blur-sm p-1">
-        <h1 className="pl-2 text-[18px] font-bold text-orange-500  ">
-          Process Mining DashBoard
-        </h1>
-        <p className="text-[10px] text-white pl-2">
-          By <b className="text-orange-500">Lumel</b>{" "}
+    <DashboardLayout>
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold mb-2"> Dashboard</h1>
+        <p className="text-gray-600">
+          Comprehensive analysis of order-to-cash process performance using real
+          CSV data
         </p>
       </div>
-      <p className="p-4 w-[400px] text-gray-600  capitalize text-center">
-        Upload your event log CSV file to analyze{" "}
-        <b>
-          process flows, identify bottlenecks, and discover optimization
-          opportunities.
-        </b>
-      </p>
 
-      <Card className="w-[60%] shadow">
-        <CardHeader className="space-y-1 border-b border-gray-100 pb-4">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-orange-100 text-orange-500">
-            <FileSpreadsheet className="h-6 w-6" />
+      <FilterBar
+        onFilterChange={setFilters}
+        filters={filters}
+        materialGroups={materialGroups}
+        companies={companies}
+        regions={regions}
+      />
+
+      {isLoading ? (
+        <div className="flex justify-center items-center h-64">
+          <Loader />
+        </div>
+      ) : (
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <KPICard
+              title="Average Lead Time"
+              value={`${performanceMetrics.avgLeadTime} days`}
+              trend={-2.3}
+              trendLabel="vs. last month"
+              trendDirection="down"
+              trendIsPositive={true}
+            />
+            <KPICard
+              title="On-Time Delivery"
+              value={`${performanceMetrics.onTimeDeliveryRate}%`}
+              trend={3.5}
+              trendLabel="vs. last month"
+              trendDirection="up"
+              trendIsPositive={true}
+            />
+            <KPICard
+              title="Total Cases"
+              value={performanceMetrics.caseCount.toLocaleString()}
+              trend={8.2}
+              trendLabel="vs. last month"
+              trendDirection="up"
+              trendIsPositive={true}
+            />
+            <KPICard
+              title="Active Cases"
+              value={performanceMetrics.activeCases.toLocaleString()}
+              trend={-5.1}
+              trendLabel="vs. last month"
+              trendDirection="down"
+              trendIsPositive={true}
+            />
           </div>
-          <CardTitle className="pt-2 text-center text-2xl font-bold">
-            Upload Event Log CSV
-          </CardTitle>
-          <CardDescription className="text-center">
-            We&apos;ll analyze your data and generate interactive visualizations
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4 pt-6">
-          {error && (
-            <div className="animate-in fade-in slide-in-from-top-4 duration-300 ease-in-out">
-              <div className="relative rounded-lg border border-orange-200 bg-orange-50 p-4">
-                <div className="flex items-start">
-                  <div className="mr-3 flex-shrink-0">
-                    <AlertCircle className="h-5 w-5 text-orange-500" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="text-sm font-medium text-orange-800">
-                      Validation Error
-                    </h3>
-                    <div className="mt-1 text-sm text-orange-700">{error}</div>
 
-                    <div className="mt-3">
-                      <h4 className="text-xs font-medium uppercase text-orange-800">
-                        Suggestions:
-                      </h4>
-                      <ul className="mt-1 list-inside list-disc text-sm text-orange-700">
+          <div className="bg-white p-6 rounded-lg shadow mb-6">
+            <h2 className="text-lg font-semibold mb-4">
+              Process Flow Overview
+            </h2>
+            <div className="">
+              <ProcessFlow
+                nodes={processFlowData.nodes}
+                edges={processFlowData.edges}
+              />
+            </div>
+          </div>
+
+          <Tabs
+            tabs={[
+              {
+                label: "Recent Cases",
+                content: (
+                  <div className="bg-white rounded-lg shadow">
+                    <DataTable
+                      headers={[
+                        "Case ID",
+                        "Start Date",
+                        "End Date",
+                        "Duration",
+                        "Status",
+                      ]}
+                      rows={[
+                        [
+                          "aa091dbf-1dc9-45cb-8362-4c825c59ed51",
+                          "2024-03-12",
+                          "2024-03-27",
+                          "15.0 days",
+                          "Completed",
+                        ],
+                        [
+                          "9a576137-cb6e-4eba-b002-4253ea420f33",
+                          "2024-01-17",
+                          "2024-01-23",
+                          "6.2 days",
+                          "Completed",
+                        ],
+                        [
+                          "18a6cba8-a509-4895-9328-2d10f10f77f0",
+                          "2024-01-14",
+                          "2024-01-30",
+                          "16.2 days",
+                          "Completed",
+                        ],
+                        [
+                          "f4e6cdb4-e57d-4107-a859-8bd29a60ee55",
+                          "2024-10-28",
+                          "2024-11-07",
+                          "10.1 days",
+                          "Completed",
+                        ],
+                        [
+                          "a7517a13-c49d-4cce-8644-8fc8dadce7b2",
+                          "2024-03-22",
+                          "2024-04-01",
+                          "10.8 days",
+                          "Completed",
+                        ],
+                      ]}
+                    />
+                  </div>
+                ),
+                id: "recent-cases",
+              },
+              {
+                label: "Process Variants",
+                content: (
+                  <div className="bg-white rounded-lg shadow p-6">
+                    <div className="space-y-4">
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <div className="font-medium">Standard Path</div>
+                          <div className="text-sm text-gray-500">
+                            Receive PO → Create SO → Create Delivery → Create
+                            Shipment → Issue Goods → Create Invoice → Clear
+                            Invoice
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <div className="font-medium">57.1%</div>
+                          <div className="text-sm text-gray-500">
+                            52,341 cases
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <div className="font-medium">Price Change Path</div>
+                          <div className="text-sm text-gray-500">
+                            Receive PO → Create SO → Change Net Price → Create
+                            Delivery → Create Shipment → Issue Goods → Create
+                            Invoice → Clear Invoice
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <div className="font-medium">17.0%</div>
+                          <div className="text-sm text-gray-500">
+                            15,585 cases
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <div className="font-medium">
+                            Material Change Path
+                          </div>
+                          <div className="text-sm text-gray-500">
+                            Receive PO → Create SO → Change Material → Create
+                            Delivery → Create Shipment → Issue Goods → Create
+                            Invoice → Clear Invoice
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <div className="font-medium">12.4%</div>
+                          <div className="text-sm text-gray-500">
+                            11,376 cases
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ),
+                id: "process-variants",
+              },
+              {
+                label: "Performance Insights",
+                content: (
+                  <div className="bg-white rounded-lg shadow p-6">
+                    <div className="prose ">
+                      <p>
+                        Analysis of the order-to-cash process reveals several
+                        key insights:
+                      </p>
+
+                      <ul className="list-disc pl-5 space-y-2 mt-2">
                         <li>
-                          Check that your CSV file contains all required columns
+                          <span className="font-medium">
+                            Lead Time Variation:
+                          </span>{" "}
+                          Significant variation in lead times across companies,
+                          with Drystone India showing the best performance at{" "}
+                          {performanceMetrics.avgLeadTime} days average.
                         </li>
                         <li>
-                          Column names should be lowercase and match exactly
+                          <span className="font-medium">On-Time Delivery:</span>{" "}
+                          {performanceMetrics.onTimeDeliveryRate}% of cases are
+                          delivered on time, with room for improvement in
+                          specific regions.
                         </li>
                         <li>
-                          Download our{" "}
-                          <a href="#" className="font-medium underline">
-                            sample template
-                          </a>{" "}
-                          for reference
+                          <span className="font-medium">Process Variants:</span>{" "}
+                          57.1% of cases follow the standard path, while 17.0%
+                          involve price changes and 12.4% involve material
+                          changes.
+                        </li>
+                        <li>
+                          <span className="font-medium">Bottlenecks:</span> The
+                          Clear Invoice activity has the longest duration at 5.2
+                          days on average, representing a key opportunity for
+                          process improvement.
                         </li>
                       </ul>
                     </div>
                   </div>
-                  <button
-                    onClick={() => setError(null)}
-                    className="ml-auto flex-shrink-0 rounded-full p-1 text-orange-500 hover:bg-orange-100"
-                  >
-                    <X className="h-4 w-4" />
-                    <span className="sr-only">Dismiss</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-
-          <div className="space-y-2">
-            <label
-              htmlFor="csv-upload"
-              className="flex h-32 w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-200 bg-white transition-colors hover:border-orange-300 hover:bg-gray-50"
-            >
-              <div className="flex flex-col items-center justify-center pb-6 pt-5">
-                <Upload className="mb-2 h-8 w-8 text-orange-500" />
-                <p className="mb-2 text-sm text-gray-500">
-                  <span className="font-semibold">Click to upload</span> or drag
-                  and drop
-                </p>
-                <p className="text-xs text-gray-500">.CSV files only</p>
-              </div>
-              <input
-                id="csv-upload"
-                type="file"
-                accept=".csv,.xlxs"
-                className="hidden"
-                onChange={(e) => setFile(e.target.files?.[0] || null)}
-              />
-            </label>
-
-            {file && (
-              <div className="mt-2 flex items-center rounded-md bg-green-50 px-3 py-2 text-sm text-green-700">
-                <CheckCircle2 className="mr-2 h-4 w-4 text-green-500" />
-                <span className="font-medium">{file.name}</span>
-                <span className="ml-2 text-xs text-green-600">
-                  ({(file.size / 1024).toFixed(1)} KB)
-                </span>
-                <button
-                  onClick={() => setFile(null)}
-                  className="ml-auto rounded-full p-1 text-green-500 hover:bg-green-100"
-                >
-                  <X className="h-3.5 w-3.5" />
-                  <span className="sr-only">Remove file</span>
-                </button>
-              </div>
-            )}
-
-            <div className="mt-3 rounded-md bg-gray-50 p-3">
-              <div className="flex items-center">
-                <h4 className="text-xs font-medium uppercase text-gray-500">
-                  Required Format
-                </h4>
-                <div className="relative ml-1 inline-block">
-                  <button className="text-gray-400 hover:text-gray-500">
-                    <HelpCircle className="h-3.5 w-3.5" />
-                    <span className="sr-only">Help</span>
-                  </button>
-                </div>
-              </div>
-              <p className="text-sm text-gray-600">
-                Your CSV must include these columns:{" "}
-                <span className="font-medium">
-                  case_id, activity, timestamp
-                </span>
-              </p>
-              <p className="mt-1 text-xs text-gray-500">
-                After upload, you&apos;ll be taken to the dashboard to view your
-                analysis results.
-              </p>
-            </div>
-          </div>
-        </CardContent>
-        <CardFooter className="border-t border-gray-100 pt-4">
-          <Button
-            className="w-full bg-orange-500 text-white hover:bg-orange-600"
-            onClick={handleUpload}
-            disabled={isUploading}
-          >
-            {isUploading ? (
-              <>
-                <svg
-                  className="mr-2 h-4 w-4 animate-spin"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  ></circle>
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  ></path>
-                </svg>
-                Processing...
-              </>
-            ) : (
-              "Upload and Continue"
-            )}
-          </Button>
-        </CardFooter>
-      </Card>
-
-      <div className="mt-6 max-w-md text-center text-sm text-gray-500">
-        <p>
-          Need help with your CSV format?{" "}
-          <a href="#" className="text-orange-500 hover:underline">
-            View our guide
-          </a>{" "}
-          or
-          <a href="#" className="ml-1 text-orange-500 hover:underline">
-            download a sample file
-          </a>
-          .
-        </p>
-      </div>
-    </div>
+                ),
+                id: "performance-insights",
+              },
+            ]}
+            activeTab={currentTab}
+            onTabChange={function (tabId: string): void {
+              console.log(tabId);
+              setCurrentTab(tabId);
+            }}
+          />
+        </>
+      )}
+    </DashboardLayout>
   );
 }
