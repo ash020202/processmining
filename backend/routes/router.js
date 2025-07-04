@@ -4,7 +4,6 @@ import {
   getOverview,
   overviewWithFilters,
 } from "../handlers/overviewPgDataHandler.js";
-import { getNodeData } from "../handlers/testHandler.js";
 
 const router = [
   {
@@ -48,11 +47,6 @@ const router = [
         parse: true,
       },
     },
-  },
-  {
-    method: "GET",
-    path: "/node",
-    handler: getNodeData,
   },
   {
     method: ["GET", "POST"],
