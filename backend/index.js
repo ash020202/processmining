@@ -1,10 +1,15 @@
 import dotenv from "dotenv";
-import { testConnection } from "./utils/db-connection.js";
 import server from "./server.js";
+import { initializeDatabase } from "./config/duckdb.js";
 dotenv.config();
 
 (async () => {
-  testConnection();
-  await server.start();
-  console.log("Server listening %s/ ", server.info.uri);
+  try {
+    await initializeDatabase();
+    await server.start();
+    console.log("Server listening %s/ ", server.info.uri);
+  } catch (error) {
+    console.error("Startup failed:", error);
+    process.exit(1);
+  }
 })();

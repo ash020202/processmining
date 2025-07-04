@@ -1,3 +1,11 @@
+import { getDuckDBColumnMetadata } from "../handlers/dynamicFilters.js";
+import { handleFileUpload } from "../handlers/fileUploadHandler.js";
+import {
+  getOverview,
+  overviewWithFilters,
+} from "../handlers/overviewPgDataHandler.js";
+import { getNodeData } from "../handlers/testHandler.js";
+
 const router = [
   {
     method: "GET",
@@ -7,26 +15,47 @@ const router = [
     },
   },
   {
-    method: "GET",
-    path: "/user",
-    handler: (req, h) => {
-      const user = [{ name: "vimal" }, { name: "vimal" }, { name: "vimal" }];
-      return h.status;
+    method: "POST",
+    path: "/upload",
+    handler: handleFileUpload,
+    options: {
+      payload: {
+        output: "file", // saves file to tmp and gives path
+        parse: true,
+        multipart: true, // IMPORTANT!
+        allow: "multipart/form-data",
+        maxBytes: 104857600, // 100MB
+      },
     },
   },
   {
     method: "POST",
-    path: "/name",
-    handler: (req, h) => {
-      const name = req.payload;
-      return {
-        message: "Data received successfully!",
-        data: name,
-      };
+    path: "/filters",
+    handler: getDuckDBColumnMetadata,
+  },
+  {
+    method: "GET",
+    path: "/overview",
+    handler: getOverview,
+  },
+  {
+    method: "POST",
+    path: "/overview",
+    handler: overviewWithFilters,
+    options: {
+      payload: {
+        allow: ["application/json"],
+        parse: true,
+      },
     },
   },
   {
     method: "GET",
+    path: "/node",
+    handler: getNodeData,
+  },
+  {
+    method: ["GET", "POST"],
     path: "/{any*}",
     handler: (req, h) => {
       return h.redirect("/");
